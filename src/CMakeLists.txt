@@ -7,6 +7,7 @@ add_library(
     adam.cpp
     fixed_sgd.cpp
     rmsprop.cpp
+    momentum.cpp
     point_cloud_batch.cpp
     sgdicp.cpp
     utils.cpp

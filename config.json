@@ -15,7 +15,7 @@
     "icp": {
         "batch-size": 150,
         "max-matching-distance": 1.0,
-        "max-iterations": 100,
+        "max-iterations": 150,
         "convergence-steps": 5,
         "translational-convergence": 0.05,
         "rotational-convergence": 0.05,
@@ -37,6 +37,11 @@
         "decay-rate": 0.96,
         "preconditioner": 1e-3
     },
+    "momentum":
+    {
+      "step-size": 1
+    },
+
     "rmsprop":
     {
       "step-size": 0.01,
