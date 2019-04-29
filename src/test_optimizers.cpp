@@ -96,7 +96,7 @@ TEST_CASE("fixed", "")
 TEST_CASE("rmsprop", "")
 {
     double param = 10.0;
-    auto rmsprop = Rmsprop({param}, 0.01, 0.9);
+    auto rmsprop = Rmsprop({param}, 0.1, 0.9);
     for(int i=0; i<1000; ++i)
     {
         auto new_param = rmsprop.update_parameters({fdx(param)});
