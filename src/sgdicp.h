@@ -109,7 +109,7 @@ class SGDICP
          *      transformed
          * \return transformation matrix which moves cloud_in onto cloud_out
          */
-        Eigen::Matrix4d allign_clouds(
+        Eigen::Matrix4d align_clouds(
                 Cloud_t::Ptr            cloud_in,
                 Cloud_t::Ptr            cloud_out,
                 Parameters const&       parameters

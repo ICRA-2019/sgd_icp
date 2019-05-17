@@ -51,7 +51,7 @@ SGDICP::SGDICP(std::unique_ptr<AbstractSgdOptimizer> sgd_optimizer)
     :   m_sgd_optimizer(std::move(sgd_optimizer))
 {}
 
-Eigen::Matrix4d SGDICP::allign_clouds(
+Eigen::Matrix4d SGDICP::align_clouds(
         Cloud_t::Ptr                    cloud_in,
         Cloud_t::Ptr                    cloud_out,
         Parameters const&               parameters

@@ -230,7 +230,7 @@ int main(int argc, char * argv[])
     // +------------------------------------------------------------------------
     auto time = pcl::console::TicToc();
     time.tic();
-    auto transformation_matrix = sgd_icp->allign_clouds(
+    auto transformation_matrix = sgd_icp->align_clouds(
             cloud_in,
             cloud_out,
             SGDICP::Parameters(
