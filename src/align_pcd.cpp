@@ -59,6 +59,30 @@ namespace po = boost::program_options;
 namespace pt = boost::property_tree;
 
 
+/**
+ * \brief Saves a point cloud with color information specified by the user.
+ *
+ * \param cloud the cloud xyz information to store
+ * \param fname name of the file in which to store the cloud
+ * \param color the color to use with values between 0 and 255
+ */
+void write_colorized_cloud(Cloud_t::Ptr cloud, std::string fname, Eigen::Vector3i const& color)
+{
+    ColorCloud_t::Ptr color_cloud(new ColorCloud_t);
+    for(auto const& pt : *cloud)
+    {
+        ColorPoint_t cpt;
+        cpt.x = pt.x;
+        cpt.y = pt.y;
+        cpt.z = pt.z;
+        cpt.r = color[0];
+        cpt.g = color[1];
+        cpt.b = color[2];
+        color_cloud->push_back(cpt);
+    }
+
+    pcl::io::savePCDFile(fname, *color_cloud);
+}
 int main(int argc, char * argv[])
 {
     // +------------------------------------------------------------------------
@@ -266,7 +290,10 @@ int main(int argc, char * argv[])
             *result,
             transformation_matrix
     );
-    pcl::io::savePCDFileASCII("result_sgdicp.pcd", *result);
+
+    write_colorized_cloud(cloud_in, "/tmp/cloud_source.pcd", {196, 98, 33});
+    write_colorized_cloud(cloud_out, "/tmp/cloud_target.pcd", {89, 96, 99});
+    write_colorized_cloud(result, "/tmp/cloud_aligned.pcd", {29, 156, 229});
 
     return 0;
 }

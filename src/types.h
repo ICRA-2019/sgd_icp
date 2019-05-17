@@ -46,5 +46,8 @@
 using Point_t = pcl::PointXYZ;
 using Cloud_t = pcl::PointCloud<Point_t>;
 
+using ColorPoint_t = pcl::PointXYZRGB;
+using ColorCloud_t = pcl::PointCloud<ColorPoint_t>;
+
 
 #endif /* end of include guard */
