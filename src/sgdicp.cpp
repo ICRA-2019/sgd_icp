@@ -196,8 +196,8 @@ Eigen::Matrix4d SGDICP::current_transform() const
           Eigen::AngleAxisd(params[4], Eigen::Vector3d::UnitY()) *
           Eigen::AngleAxisd(params[3], Eigen::Vector3d::UnitX());
 
-    transform.rotate(rot);
     transform.translate(Eigen::Vector3d(params[0], params[1], params[2]));
+    transform.rotate(rot);
 
     return transform.matrix();
 }
