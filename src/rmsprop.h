@@ -46,9 +46,9 @@ class Rmsprop : public AbstractSgdOptimizer
 {
     public:
         Rmsprop(
-                std::vector<double>         initial_values,
-                double                      step_size,
-                double                      decay_rate
+                std::vector<double>     initial_values,
+                double                  step_size,
+                double                  decay_rate
         );
 
     protected:

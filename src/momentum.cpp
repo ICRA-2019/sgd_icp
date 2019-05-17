@@ -41,23 +41,19 @@
 #include "momentum.h"
 
 MomentumSgd::MomentumSgd(
-                    std::vector<double>         initial_values,
-                    double                      step_size
-                     )
-: AbstractSgdOptimizer(initial_values)
-, m_step_size(step_size)
-, m_momentum(initial_values.size(), 0.0)
+        std::vector<double>         initial_values,
+        double                      step_size
+)   :   AbstractSgdOptimizer(initial_values)
+      , m_step_size(step_size)
+      , m_momentum(initial_values.size(), 0.0)
 {}
-
 
 void MomentumSgd::do_perform_update(std::vector<double> const& gradients)
 {
-  for(size_t i=0; i<gradients.size(); ++i)
-  {
-      
-      m_momentum[i] = 0.8*m_momentum[i] + m_step_size*gradients[i];
-      m_parameters[i] -= m_momentum[i];
-    
-}
+    for(size_t i=0; i<gradients.size(); ++i)
+    {
+        m_momentum[i] = 0.8*m_momentum[i] + m_step_size*gradients[i];
+        m_parameters[i] -= m_momentum[i];
+    }
 }
 

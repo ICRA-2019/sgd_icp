@@ -34,8 +34,6 @@
  */
 
 
-
-
 #include <Eigen/Geometry>
 
 #include <pcl/common/transforms.h>
@@ -87,15 +85,18 @@ Eigen::Matrix4d SGDICP::align_clouds(
                 parameters.max_matching_distance,
                 parameters.filter
         );
-        
+
         auto raw_batch_resized = std::get<0>(correspondences);
         auto transformed_batch_paired = std::get<1>(correspondences);
         auto cloud_out_paired = std::get<2>(correspondences);
-        
-        // if correspondences are not found for 100 mini-batches, return current diverged transform
-        if (diverge_count==100) { std::cout<<"ICP is diverging .."<<std::endl;
-            return current_transform();}
-        
+
+        // If correspondences are not found for 100 mini-batches, return
+        // the current diverged transform
+        if (diverge_count==100) {
+            std::cout << "ICP is diverging ..." << std::endl;
+            return current_transform();
+        }
+
         // Abort this iteration if not enough matches are found
         if(cloud_out_paired->size() == 0 || cloud_out_paired->size() < 3)
         {
@@ -111,7 +112,7 @@ Eigen::Matrix4d SGDICP::align_clouds(
                 cloud_out_paired
         );
         m_sgd_optimizer->update_parameters(gradient_terms);
-        
+
         // Check for convergence
         bool translation_converged = is_translation_converged(
                 reference_state,
@@ -130,13 +131,13 @@ Eigen::Matrix4d SGDICP::align_clouds(
             update_state(reference_state);
             convergence_count = 0;
         }
-        
+
         if(convergence_count >= parameters.convergence_steps)
         {
             has_converged = true;
             std::cout << "Convergence achieved" << std::endl;
         }
-        
+
         iterations++;
     }
 
@@ -157,19 +158,19 @@ std::vector<double> SGDICP::compute_gradient_terms(
     auto cloud_out_paired_matrix = cloud_to_matrix(cloud_out_paired);
 
     auto partial_derivatives = get_partial_derivative_terms();
-    
+
     Eigen::RowVector3d error;
-    
+
     std::vector<double> gradient_cost = {0,0,0,0,0,0};
     for(int i=0; i<batch_paired_matrix.cols(); ++i)
     {
         error = (batch_paired_matrix.col(i) - cloud_out_paired_matrix.col(i))
                 .transpose();
-        
+
         gradient_cost[0] += (error * (std::get<0>(partial_derivatives)));
         gradient_cost[1] += (error * (std::get<1>(partial_derivatives)));
         gradient_cost[2] += (error * (std::get<2>(partial_derivatives)));
-        
+
         gradient_cost[3] += (error * ((std::get<3>(partial_derivatives))
                     * raw_cloud_matrix.col(i)));
         gradient_cost[4] +=  (error * ((std::get<4>(partial_derivatives))
@@ -177,19 +178,19 @@ std::vector<double> SGDICP::compute_gradient_terms(
         gradient_cost[5] += (error * ((std::get<5>(partial_derivatives))
                     * raw_cloud_matrix.col(i)));
     }
-    
+
     for(int i=0; i<gradient_cost.size(); ++i)
     {
         gradient_cost[i] /= batch_paired_matrix.cols();
     }
-    
+
     return gradient_cost;
 }
 
 Eigen::Matrix4d SGDICP::current_transform() const
 {
     auto params = m_sgd_optimizer->get_parameters();
-   
+
     Eigen::Affine3d transform(Eigen::Affine3d::Identity());
     Eigen::Matrix3d rot;
     rot = Eigen::AngleAxisd(params[5], Eigen::Vector3d::UnitZ()) *
@@ -213,6 +214,7 @@ std::tuple<
 >
 SGDICP::get_partial_derivative_terms() const
 {
+
     auto params = m_sgd_optimizer->get_parameters();
 
     double A = std::cos(params[5]);
@@ -232,7 +234,7 @@ SGDICP::get_partial_derivative_terms() const
     double BE = B * E;
     double BF = B * F;
     double BDE = B * DE;
-   
+
     Eigen::Matrix3d partial_roll;
     Eigen::Matrix3d partial_pitch;
     Eigen::Matrix3d partial_yaw;
@@ -303,7 +305,7 @@ bool SGDICP::is_translation_converged(
             std::pow(reference_state[1] - param[1], 2) +
             std::pow(reference_state[2] - param[2], 2)
     );
-        
+
     return delta < threshold;
 }
 

@@ -1,4 +1,4 @@
-# SGDICPlibrary
+# SGD-ICP Library
 add_library(
     sgdicp
     SHARED
@@ -37,7 +37,6 @@ target_link_libraries(
     ${Boost_LIBRARIES}
     ${PCL_LIBRARIES}
 )
-
 
 # Optimizer test
 add_executable( test_optimizers test_optimizers.cpp )

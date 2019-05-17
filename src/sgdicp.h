@@ -114,7 +114,7 @@ class SGDICP
                 Cloud_t::Ptr            cloud_out,
                 Parameters const&       parameters
         );
- 
+
 
     private:
         /**
@@ -171,7 +171,7 @@ class SGDICP
                 Eigen::VectorXd const&  reference_state,
                 double                  threshold
         );
-    
+
         /**
          * \brief Returns whether or not rotational convergence was achieved.
          *
@@ -183,7 +183,7 @@ class SGDICP
                 Eigen::VectorXd const&  reference_state,
                 double                  threshold
         );
-    
+
 
     private:
         //! Optimizer for the transform parameters

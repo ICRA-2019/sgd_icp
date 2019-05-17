@@ -36,6 +36,7 @@
  
  */
 
+
 #ifndef momentum_h
 #define momentum_h
 
@@ -45,16 +46,19 @@
 class MomentumSgd : public AbstractSgdOptimizer
 {
 
-public:
-    MomentumSgd(
-              std::vector<double>     initial_values,
-              double                  step_size
-              );
-protected:
-    void do_perform_update(std::vector<double> const& gradients) override;
-private:
-    double m_step_size;
-    std::vector<double>    m_momentum;
+    public:
+        MomentumSgd(
+                std::vector<double>     initial_values,
+                double                  step_size
+        );
 
+    protected:
+        void do_perform_update(std::vector<double> const& gradients) override;
+
+    private:
+        double                          m_step_size;
+        std::vector<double>             m_momentum;
 };
+
+
 #endif /* momentum_h */

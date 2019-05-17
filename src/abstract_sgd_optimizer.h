@@ -1,7 +1,7 @@
 #ifndef __ABSTRACT_SGD_OPTIMIZER_H__
 #define __ABSTRACT_SGD_OPTIMIZER_H__
 
- 
+
  /*
  Copyright (c) 2019
  
@@ -36,7 +36,7 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
- 
+
 
 
 #include <vector>

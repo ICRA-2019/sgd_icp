@@ -36,6 +36,7 @@
 
 #include <cmath>
 
+#include <boost/format.hpp>
 #include <boost/program_options.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
@@ -83,6 +84,8 @@ void write_colorized_cloud(Cloud_t::Ptr cloud, std::string fname, Eigen::Vector3
 
     pcl::io::savePCDFile(fname, *color_cloud);
 }
+
+
 int main(int argc, char * argv[])
 {
     // +------------------------------------------------------------------------
@@ -121,7 +124,7 @@ int main(int argc, char * argv[])
         return 1;
     }
 
-     
+
     // +------------------------------------------------------------------------
     // | Processing of inputs via SGD ICP
     // +------------------------------------------------------------------------
@@ -146,13 +149,13 @@ int main(int argc, char * argv[])
     }
 
     pcl::io::loadPCDFile<Point_t>(vm["source"].as<std::string>(), *cloud_in2);
-    
+
     auto indices = std::vector<int>();
     pcl::removeNaNFromPointCloud(*cloud_in, *cloud_in, indices);
     pcl::removeNaNFromPointCloud(*cloud_in2, *cloud_in, indices);
     pcl::removeNaNFromPointCloud(*cloud_out,*cloud_out, indices);
-    
-     
+
+
     // +------------------------------------------------------------------------
     // | Read configuration and setup accordingly
     // +------------------------------------------------------------------------
@@ -167,88 +170,83 @@ int main(int argc, char * argv[])
         cloud_out = normalise_clouds(cloud_out, max_range);
     }
 
-   
-    std::vector<double> initial_guess ={config.get<double >("initial-guess.x"),
+    std::vector<double> initial_guess = {
+        config.get<double >("initial-guess.x"),
         config.get<double >("initial-guess.y"),
         config.get<double >("initial-guess.z"),
         config.get<double >("initial-guess.roll"),
         config.get<double >("initial-guess.pitch"),
-        config.get<double >("initial-guess.yaw")};
-    
-    
+        config.get<double >("initial-guess.yaw")
+    };
+
     std::unique_ptr<SGDICP> sgd_icp;
     if(config.get<std::string>("method") == "fixed")
     {
         sgd_icp.reset(new SGDICP(
-                std::unique_ptr<FixedSgd>(
-                    new FixedSgd(
-                        initial_guess,
-                        config.get<double>("fixed.step-size")
-                    )
+            std::unique_ptr<FixedSgd>(
+                new FixedSgd(
+                    initial_guess,
+                    config.get<double>("fixed.step-size")
                 )
+            )
         ));
     }
     else if(config.get<std::string>("method") == "adadelta")
     {
         sgd_icp.reset(new SGDICP(
-                std::unique_ptr<AdaDelta>(
-                    new AdaDelta(
-                        initial_guess,
-                        config.get<double>("adadelta.decay-rate"),
-                        config.get<double>("adadelta.preconditioner")
-                    )
+            std::unique_ptr<AdaDelta>(
+                new AdaDelta(
+                    initial_guess,
+                    config.get<double>("adadelta.decay-rate"),
+                    config.get<double>("adadelta.preconditioner")
                 )
+            )
         ));
     }
     else if(config.get<std::string>("method") == "adam")
     {
         sgd_icp.reset(new SGDICP(
-                std::unique_ptr<Adam>(
-                    new Adam(
-                        initial_guess,
-                        config.get<double>("adam.step-size"),
-                        config.get<double>("adam.decay-rate-a"),
-                        config.get<double>("adam.decay-rate-b")
-                    )
+            std::unique_ptr<Adam>(
+                new Adam(
+                    initial_guess,
+                    config.get<double>("adam.step-size"),
+                    config.get<double>("adam.decay-rate-a"),
+                    config.get<double>("adam.decay-rate-b")
                 )
+            )
         ));
     }
-    
-    
     else if (config.get<std::string>("method") == "momentum")
     {
         sgd_icp.reset(new SGDICP(
-                                 std::unique_ptr<MomentumSgd>(
-                                                    new MomentumSgd(
-                                                                 initial_guess,
-                                                                 config.get<double>("momentum.step-size")
-                                                                     )
-                                                              )
-                                                     ));
+            std::unique_ptr<MomentumSgd>(
+                new MomentumSgd(
+                    initial_guess,
+                    config.get<double>("momentum.step-size")
+                )
+            )
+        ));
     }
-    
-    
     else if(config.get<std::string>("method") == "rmsprop")
     {
         sgd_icp.reset(new SGDICP(
-                                 std::unique_ptr<Rmsprop>(
-                                                       new Rmsprop(
-                                                                initial_guess,
-                                                                config.get<double>("rmsprop.step-size"),
-                                                                config.get<double>("rmsprop.decay-rate")
-                                                                )
-                                                       )
-                                 ));
+            std::unique_ptr<Rmsprop>(
+                new Rmsprop(
+                    initial_guess,
+                    config.get<double>("rmsprop.step-size"),
+                    config.get<double>("rmsprop.decay-rate")
+                )
+            )
+        ));
     }
     else
-    
     {
         std::cout << "Invalid optimizer specified, valid optiosn are: "
                   << "adadelta, adam, fixed, momentum, and rmsprop" << std::endl;
         return 1;
     }
 
-     
+
     // +------------------------------------------------------------------------
     // | Perform ICP alignment
     // +------------------------------------------------------------------------
@@ -258,6 +256,7 @@ int main(int argc, char * argv[])
             cloud_in,
             cloud_out,
             SGDICP::Parameters(
+                //1,
                 config.get<int>("icp.max-iterations"),
                 config.get<int>("icp.batch-size"),
                 config.get<double>("icp.max-matching-distance"),
@@ -267,17 +266,16 @@ int main(int argc, char * argv[])
                 config.get<bool>("icp.filter")
             )
     );
+
     std::cout << "ICP Duration: " << time.toc() << " ms" << std::endl;
-     auto rmse = compute_rmse(cloud_in, cloud_out, transformation_matrix);
-     
+    auto rmse = compute_rmse(cloud_in, cloud_out, transformation_matrix);
+
     // If the clouds were normalized undo this to obtain the true transformation
-    
     if(config.get<bool>("normalize-cloud"))
     {
         rescale_transformation_matrix(transformation_matrix, max_range);
     }
-    
-    
+
     std::cout << "RMSE: "<< rmse << "\n";
     std::cout << "Transformation_matrix:\n"
               << transformation_matrix << std::endl;
