@@ -22,6 +22,13 @@ target_link_libraries(
 add_executable( align_pcd align_pcd.cpp )
 target_link_libraries( align_pcd sgdicp )
 
+# PCL based PCD alignment
+add_executable( pcl_align_pcd pcl_align_pcd.cpp )
+target_link_libraries(
+    pcl_align_pcd
+    ${PCL_LIBRARIES}
+    ${Boost_LIBRARIES}
+)
 
 # Tool to create transformed cloud from arbitrrary inputs
 add_executable( transform_cloud transform_cloud )
