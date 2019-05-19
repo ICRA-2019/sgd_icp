@@ -11,12 +11,12 @@ set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${BASE_DIR}/lib )
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BASE_DIR}/bin )
 
 # Find libraries
-find_package( PCL REQUIRED COMPONENTS common filters io )
 find_package( Boost REQUIRED COMPONENTS program_options system )
+find_package( Eigen3 REQUIRED )
+find_package( PCL REQUIRED COMPONENTS common filters io )
 
 include_directories(
     src
-    ${Boost_INCLUDE_DIRS}
     ${PCL_INCLUDE_DIRS}
 )
 link_directories( ${PCL_LIBRARY_DIRS} )
