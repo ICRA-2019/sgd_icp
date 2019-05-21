@@ -46,11 +46,12 @@ int main(int argc, char const* argv[])
     icp.setInputTarget(cloud_out);
     icp.setRANSACIterations(10);
     icp.setMaxCorrespondenceDistance(1.0);
-    icp.setMaximumIterations(1);
+    icp.setMaximumIterations(80);
 
     Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
     icp.align(*cloud_final, transform);
     //transform = icp.getFinalTransformation();
+    std::cout << "Time: " << time.toc() << " ms" << std::endl;
 
 
     write_colorized_cloud(cloud_in, "/tmp/cloud_source.pcd", {196, 98, 33});
