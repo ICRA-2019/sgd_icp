@@ -84,13 +84,15 @@ int main(int argc, char * argv[])
     pos_args.add("yaw", 1);
 
     po::variables_map vm;
+  
     po::store(
-            po::command_line_parser(argc, argv)
-                .options(desc)
-                .positional(pos_args)
-                .run(),
-            vm
-    );
+              po::command_line_parser(argc, argv)
+              .options(desc)
+              .style(po::command_line_style::unix_style ^
+                     po::command_line_style::allow_short)
+              .run(),
+              vm
+              );
     po::notify(vm);
 
     if(vm.count("help") || !vm.count("input") || !vm.count("output") ||
