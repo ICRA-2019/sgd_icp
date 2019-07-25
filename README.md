@@ -69,4 +69,4 @@ transform_cloud
 
 This program applies a user specified transform onto a given cloud.
 
-`transform_cloud --input <source_cloud> --output <output_cloud> --pose <6D vector>'
+`transform_cloud --input <source_cloud> --output <output_cloud> --pose <6D vector>`
