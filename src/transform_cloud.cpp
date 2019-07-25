@@ -61,28 +61,19 @@ int main(int argc, char * argv[])
 
     po::options_description desc("Options");
     desc.add_options()
-        ("help", "Show the help message")
-        ("input", po::value<std::string>(), "Input point cloud")
-        ("output", po::value<std::string>(), "Output point cloud")
-        ("x", po::value<float>(), "Translation along X")
-        ("y", po::value<float>(), "Translation along Y")
-        ("z", po::value<float>(), "Translation along Z")
-        ("roll", po::value<float>(), "Rotation around roll axis")
-        ("pitch", po::value<float>(), "Rotation around pitch axis")
-        ("yaw", po::value<float>(), "Rotation around yaw axis")
+    ("help", "Show the help message")
+    ("input", po::value<std::string>(), "Input point cloud")
+    ("output", po::value<std::string>(), "Output point cloud")
+    ("pose", po::value<std::vector<float>>()->multitoken(), "6D pose vector")
+    
     ;
 
     // Configure positional arguments
     po::positional_options_description pos_args;
     pos_args.add("input", 1);
     pos_args.add("output", 1);
-    pos_args.add("x", 1);
-    pos_args.add("y", 1);
-    pos_args.add("z", 1);
-    pos_args.add("roll", 1);
-    pos_args.add("pitch", 1);
-    pos_args.add("yaw", 1);
-
+    pos_args.add("pose", 6);
+    
     po::variables_map vm;
   
     po::store(
@@ -96,15 +87,16 @@ int main(int argc, char * argv[])
     po::notify(vm);
 
     if(vm.count("help") || !vm.count("input") || !vm.count("output") ||
-       !vm.count("x") || !vm.count("y") || !vm.count("z") ||
-       !vm.count("roll") || !vm.count("pitch") || !vm.count("yaw")
+       !vm.count("pose")
     )
     {
         std::cout << desc << std::endl;
         return 1;
     }
 
-
+    auto p1 = vm["pose"].as<std::vector<float>>();
+  
+    
     // +------------------------------------------------------------------------
     // | Transforming of the input cloud
     // +------------------------------------------------------------------------
@@ -112,14 +104,14 @@ int main(int argc, char * argv[])
     pcl::io::loadPCDFile<Point_t>(vm["input"].as<std::string>(), *input);
 
     Eigen::Quaternionf rotation(Eigen::Matrix3f(
-                    Eigen::AngleAxisf(vm["yaw"].as<float>(), Eigen::Vector3f::UnitZ()) *
-                    Eigen::AngleAxisf(vm["pitch"].as<float>(), Eigen::Vector3f::UnitY()) *
-                    Eigen::AngleAxisf(vm["roll"].as<float>(), Eigen::Vector3f::UnitX())
+                    Eigen::AngleAxisf(p1[5], Eigen::Vector3f::UnitZ()) *
+                    Eigen::AngleAxisf(p1[4], Eigen::Vector3f::UnitY()) *
+                    Eigen::AngleAxisf(p1[3], Eigen::Vector3f::UnitX())
     ));
     Eigen::Vector3f offset(
-            vm["x"].as<float>(),
-            vm["y"].as<float>(),
-            vm["z"].as<float>()
+            p1[0],
+            p1[1],
+            p1[2]
     );
 
     Cloud_t::Ptr output(new Cloud_t);
