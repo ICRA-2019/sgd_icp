@@ -11,8 +11,7 @@ IEEE International Conference on Robotics Automation, 2019
 Requirements
 ============
 
-The following libraries are needed to compile and run the code, the is
-known to run on Ubuntu 16.04.
+The following libraries are needed to compile and run the code, the code has been tested on Ubuntu 16.04.
 
 - boost
 - eigen3
